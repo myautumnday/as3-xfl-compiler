@@ -1,0 +1,27 @@
+<fonts>
+	<font id="1" name="Arial">
+		<styles>
+			<style name="Regular" file="fonts/arial_regular.swf"/>
+			<style name="Bold" file="fonts/arial_bold.swf"/>
+			<style name="Italic" file="fonts/arial_italic.swf"/>
+			<style name="Bold Italic" file="fonts/arial_bold_italic.swf"/>
+		</styles>
+	</font>
+	<font id="2" name="Zag Bold">
+		<styles>
+			<style name="Bold" file="fonts/zag_bold.swf"/>
+		</styles>
+	</font>
+	<font id="3" name="VAGRounded">
+		<styles>
+			<style name="Lite" file="fonts/vagrounded_lite.swf"/>
+			<style name="Bold" file="fonts/vagrounded_bold.swf"/>
+		</styles>
+	</font>
+	<font id="3" name="Segoe UI">
+		<styles>
+			<style name="Regular" file="fonts/segoe_ui_regular.swf"/>
+			<style name="Bold" file="fonts/segoe_ui_bold.swf"/>
+		</styles>
+	</font>
+</fonts>
