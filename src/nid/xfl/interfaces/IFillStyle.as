@@ -1,6 +1,7 @@
 package nid.xfl.interfaces 
 {
 	import nid.xfl.compiler.swf.data.SWFFillStyle;
+	import nid.xfl.compiler.swf.tags.ITag;
 	
 	/**
 	 * ...
@@ -8,7 +9,7 @@ package nid.xfl.interfaces
 	 */
 	public interface IFillStyle 
 	{
-		function export(_type:int):SWFFillStyle;
+		function export(type:int, tags:Vector.<ITag> = null, property:Object = null):SWFFillStyle;
 		function get color():uint;
 		function get alpha():Number;
 		function get index():uint;

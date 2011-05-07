@@ -2,7 +2,11 @@ package nid.xfl.core
 {
 	import flash.display.*;
 	import flash.geom.*;
+	import flash.utils.Dictionary;
 	import nid.xfl.compiler.factory.ElementFactory;
+	import nid.xfl.compiler.swf.data.SWFButtonRecord;
+	import nid.xfl.compiler.swf.data.SWFColorTransformWithAlpha;
+	import nid.xfl.compiler.swf.data.SWFMatrix;
 	import nid.xfl.compiler.swf.data.SWFSymbol;
 	import nid.xfl.compiler.swf.tags.*;
 	import nid.xfl.data.script.Actionscript;
@@ -28,6 +32,7 @@ package nid.xfl.core
 		public var stop:Boolean;
 		public var play:Boolean;
 		public var isClone:Boolean;
+		public var cloneId:int;
 		public var isEmptyFrame:Boolean;
 		public var isEndFrame:Boolean;
 		public var depthOffset:int=0;
@@ -172,7 +177,7 @@ package nid.xfl.core
 		/**
 		 * SWF PUBLISH SECTION
 		 */
-		public function publish(tags:Vector.<ITag>, property:Object,sub_tags:Vector.<ITag>=null):void
+		public function publish(tags:Vector.<ITag>, property:Object, sub_tags:Vector.<ITag> = null, isButton:Boolean = false, characters:Vector.<SWFButtonRecord> = null):void
 		{
 			/**
 			 * Publish frame data to swf tags
@@ -183,6 +188,12 @@ package nid.xfl.core
 			
 			var characterId:uint;
 			
+			if (isButton)
+			{
+				var record:SWFButtonRecord = new SWFButtonRecord();
+				record.placeMatrix 		= new SWFMatrix();
+				record.colorTransform 	= new SWFColorTransformWithAlpha();
+			}
 			/**
 			 * Create action script data
 			 */
@@ -208,21 +219,41 @@ package nid.xfl.core
 						var placeObject:TagPlaceObject2 = new TagPlaceObject2();
 						var removeObject:TagRemoveObject2 = new TagRemoveObject2();
 						
+						
+						
 						if (tweenType == "")
 						{
 							matrix = rawElements[i].matrix
 						}
 						
+						/**
+						 * If Frame is clone push place object
+						 */
 						if (isClone)
 						{
-							//trace('cloned place object');
-							placeObject.hasMatrix 			= true;
-							placeObject.hasMove 			= true;
-							placeObject.depth 				= depth;
-							placeObject.matrix 				= Convertor.toSWFMatrix(matrix);
-							placeObject.hasColorTransform 	= hasColorTransform;
-							if (hasColorTransform)placeObject.colorTransform  = Convertor.toSWFColorTransform(colorTransform);
-							sub_tags == null?tags.push(placeObject):sub_tags.push(placeObject);
+							trace('\t cloned object placed');
+							trace('\t 	property.characterId:' + property.characterId);
+							
+							if (isButton)
+							{						
+								var temp1:Dictionary = XFLCompiler.displayList;
+								var temp2:* = temp1[p_depth +'_' + depth];
+								
+								record = ElementFactory.getButtonRecordById(temp2.characterId, characters);
+								
+								setButtonState(record);
+								
+							}
+							else
+							{								
+								placeObject.hasMatrix 			= true;
+								placeObject.hasMove 			= true;
+								placeObject.depth 				= depth;
+								placeObject.matrix 				= Convertor.toSWFMatrix(matrix);
+								placeObject.hasColorTransform 	= hasColorTransform;
+								if (hasColorTransform)placeObject.colorTransform  = Convertor.toSWFColorTransform(colorTransform);
+								sub_tags == null?tags.push(placeObject):sub_tags.push(placeObject);
+							}
 						}
 						else
 						{
@@ -233,7 +264,8 @@ package nid.xfl.core
 								XFLCompiler.displayList[p_depth +'_' + depth].libraryItemName == rawElements[i].libraryItemName
 								)
 							{
-								//trace('exist in depth');
+								trace('\t   exist in depth');
+								trace('\t 		property.characterId:' + property.characterId);
 								
 								placeObject.hasMatrix 			= true;
 								placeObject.hasMove 			= true;
@@ -249,16 +281,27 @@ package nid.xfl.core
 								
 								if (result.exist)
 								{
-									//trace('exist in library');
 									property.characterId = result.element.characterId;
+									//trace('\t   exist in library');
+									//trace('\t 	  property.characterId:' + property.characterId);
 								}
 								else
 								{
-									//trace('not exist in library');
+									trace('\t   not exist in library');
 									/**
-									* Tag Definition 
+									* Definition New tag
 									*/
 									rawElements[i].publish(tags, property);
+									
+									if (isButton)
+									{
+										trace(rawElements[i]);
+										record.placeDepth  = depth;
+										record.characterId = property.characterId;
+										setButtonState(record);
+										characters.push(record);
+									}
+									rawElements[i].characterId = property.characterId;
 									XFLCompiler.elementLibrary[property.characterId] = rawElements[i];
 									XFLCompiler.characterId++;
 								}
@@ -266,7 +309,7 @@ package nid.xfl.core
 								
 								if (XFLCompiler.displayList[p_depth +'_' + depth] != undefined)
 								{
-									//trace('remove tag');
+									trace('\t remove tag depth:' + depth);
 									/**
 									 * Remove Tag
 									 */
@@ -284,7 +327,7 @@ package nid.xfl.core
 								
 								characterId = property.characterId;
 								
-								//trace('place object depth:' + depth, "Char ID:" + characterId);
+								trace('\t place object depth:' + depth, "Char ID:" + characterId);
 								
 								/**
 								 * Place tag
@@ -308,6 +351,35 @@ package nid.xfl.core
 				}
 				
 				property.depth = depth;
+			}
+		}
+		private function setButtonState(record:SWFButtonRecord):void
+		{
+			switch(sid)
+			{
+				case 1:
+				{
+					record.stateUp = true;
+				}
+				break;
+				
+				case 2:
+				{
+					record.stateOver = true;
+				}
+				break;
+				
+				case 3:
+				{
+					record.stateDown = true;
+				}
+				break;
+				
+				case 4:
+				{
+					record.stateHitTest = true;
+				}
+				break;
 			}
 		}
 	}

@@ -94,65 +94,33 @@ package nid.xfl.core
 		}
 		public function scan():void
 		{
-			//var property:Object = { depth:0 }
-			//property.parent 	= "SubTimeline";
-			//
-			//for (var l:int = 0; l < layers.length; l++)
-			//{
-				//layers[l].scan(property);
-			//}
+			var property:Object = { depth:0 }
+			property.parent 	= "SubTimeline";
+			
+			for (var l:int = 0; l < layers.length; l++)
+			{
+				layers[l].scan(property);
+			}
 		}
 		public function publish(tags:Vector.<ITag>, property:Object, sub_tags:Vector.<ITag> = null):Vector.<SWFButtonRecord>
 		{
 			
 			var characters:Vector.<SWFButtonRecord> = new Vector.<SWFButtonRecord>();
-			var states:Array = ['up', 'over', 'down', 'hit'];
 			
 			for (var i:int = 0; i < 4; i++)
 			{
+				trace('--frame:' + i + '--');
 				property.depth = 1
 				property.scriptPool = new ScriptPool(i);
-				
-				var record:SWFButtonRecord = new SWFButtonRecord();
-				record.placeDepth 		= 1;
-				record.placeMatrix 		= new SWFMatrix();
-				record.colorTransform 	= new SWFColorTransformWithAlpha();
-				
-				switch(states[i])
-				{
-					case 'up':
-					{
-						record.stateUp = true;
-						break;
-					}
-					case 'over':
-					{
-						record.stateOver = true;
-						break;
-					}
-					case 'down':
-					{
-						record.stateDown = true;
-						break;
-					}
-					case 'hit':
-					{
-						record.stateHitTest = true;
-						break;
-					}
-				}
-				
 				
 				for (var l:int = 0; l < layers.length; l++)
 				{
 					if (i < layers[l].frames.length && layers[l].frames[i] != null)
 					{
-						layers[l].publish(i, tags, property, sub_tags);
+						layers[l].publish(i, tags, property, sub_tags, true, characters);
 					}
+					
 				}
-				
-				record.characterId = property.characterId;
-				characters.push(record);
 				
 				if (property.scriptPool.script.length > 0)
 				property.frameScriptPool.push(property.scriptPool);

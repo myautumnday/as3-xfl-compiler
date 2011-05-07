@@ -49,6 +49,8 @@ package nid.xfl
 		static public var displayList:Dictionary;
 		static public var elementLibrary:Dictionary;
 		private var data:SWFData;
+		public var debug:Boolean;
+		public var dumpString:String;
 		
 		static public function findSymbol(name:String):Boolean
 		{
@@ -61,14 +63,27 @@ package nid.xfl
 		
 		public function XFLCompiler():void 
 		{
+			reset();
+		}
+		public function reset():void
+		{
+			DoABC 		= false;
+			DoABCTag 	= null;
+			SymbolClass	= null;
+			ImportedAbcTag 	= null;
+			ImportedSymbolClass = null;
+			abcGenerator 	= null;
+			displayList 	= null;
+			elementLibrary 	= null;
 			abcGenerator 	= new AbcGenerator();
 			displayList 	= new Dictionary();
 			elementLibrary 	= new Dictionary();
 		}
-		public function build(_xflobj:XFLObject, debug:Boolean = false):void
+		public function build(_xflobj:XFLObject, _debug:Boolean = false):void
 		{
+			debug = _debug;
 			xflobj = _xflobj;
-			xflobj.doc.DoABC = false;
+			//xflobj.doc.DoABC = false;
 			DoABC = xflobj.doc.DoABC;
 			
 			if (DoABC)
@@ -156,8 +171,8 @@ package nid.xfl
 			bytes.writeBytes(data);
 			
 			var swf:SWF = new SWF(bytes);
-			
 			trace(swf);
+			dumpString = swf.toString();
 			
 			dispatchEvent(new XFLEvent(XFLEvent.SWF_EXPORTED));
 		}

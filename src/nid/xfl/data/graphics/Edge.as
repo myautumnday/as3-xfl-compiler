@@ -70,7 +70,7 @@ package nid.xfl.data.graphics
 			fillStyle0 = int(data.@fillStyle0);
 			fillStyle1 = int(data.@fillStyle1);
 			
-			//stateFillStyle0 = fillStyle0 == 0?false:true;
+			stateFillStyle0 = fillStyle0 == 0?false:true;
 			//stateFillStyle1 = fillStyle1 == 0?false:true;
 			
 			//trace("fillStyle0:" + fillStyle0 );

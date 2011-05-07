@@ -5,6 +5,7 @@ package nid.xfl.data.graphics
 	import nid.xfl.compiler.swf.data.SWFFocalGradient;
 	import nid.xfl.compiler.swf.data.SWFGradient;
 	import nid.xfl.compiler.swf.data.SWFMatrix;
+	import nid.xfl.compiler.swf.tags.ITag;
 	import nid.xfl.interfaces.IFillStyle;
 	/**
 	 * ...
@@ -56,7 +57,7 @@ package nid.xfl.data.graphics
 				gradientEntry.push(new GradientEntry(data.RadialGradient.GradientEntry[i]));
 			}
 		}
-		public function export(_type:int):SWFFillStyle
+		public function export(_type:int,tags:Vector.<ITag>=null, property:Object = null):SWFFillStyle
 		{
 			var fillstyle:SWFFillStyle   = new SWFFillStyle();
 			
@@ -68,7 +69,7 @@ package nid.xfl.data.graphics
 				{
 					gradient.records.push(gradientEntry[i].export());
 				}
-				fillstyle.type	= 0x10;
+				fillstyle.type		= 0x12;
 				fillstyle.gradient	= gradient;
 			}
 			else

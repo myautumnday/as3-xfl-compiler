@@ -1,5 +1,7 @@
 package nid.xfl.compiler.factory 
 {
+	import nid.xfl.compiler.swf.data.SWFButtonRecord;
+	import nid.xfl.dom.DOMBitmapItem;
 	import nid.xfl.interfaces.IElement;
 	import nid.xfl.XFLCompiler;
 	/**
@@ -48,6 +50,18 @@ package nid.xfl.compiler.factory
 				}
 			}
 			return 0;
+		}
+		static public function getButtonRecordById(id:int,records:Vector.<SWFButtonRecord>):SWFButtonRecord
+		{
+			for each(var rec:SWFButtonRecord in records)
+			{
+				if (rec.characterId == id)
+				{
+					return rec;
+				}
+			}
+			
+			return null;
 		}
 	}
 

@@ -30,6 +30,7 @@ package nid.xfl.dom
 		 * Properties
 		 */
 		public var id:int=1;
+		public var characterId:int=1;
 		public var name:String;
 		public var itemID:String;
 		public var sourceExternalFilepath:String;
@@ -204,6 +205,7 @@ package nid.xfl.dom
 				bitmap.smoothing = true;
 				var jpeg2Encoder:JPEGEncoder = new JPEGEncoder();
 				bitmapData = jpeg2Encoder.encode(bitmap.bitmapData);
+				trace('JPEG DATA GENERATED');
 			}
 			else if (compressionType == "lossless")
 			{
