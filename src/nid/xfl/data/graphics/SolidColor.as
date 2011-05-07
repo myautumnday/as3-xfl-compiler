@@ -1,6 +1,7 @@
 package nid.xfl.data.graphics 
 {
 	import nid.xfl.compiler.swf.data.SWFFillStyle;
+	import nid.xfl.compiler.swf.tags.ITag;
 	import nid.xfl.interfaces.IFillStyle;
 	import nid.utils.Colors;
 	/**
@@ -32,7 +33,7 @@ package nid.xfl.data.graphics
 			_color = String(data.SolidColor.@color) == ""?0x000000: uint(String(data.SolidColor.@color).replace("#", "0x"));
 			_alpha = String(data.SolidColor.@alpha) == ""?1: Number(data.SolidColor.@alpha);
 		}
-		public function export(_type:int):SWFFillStyle
+		public function export(_type:int, tags:Vector.<ITag> = null, property:Object = null):SWFFillStyle
 		{
 			
 			var fillstyle:SWFFillStyle = new SWFFillStyle();

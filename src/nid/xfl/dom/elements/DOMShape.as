@@ -33,7 +33,6 @@ package nid.xfl.dom.elements
 		
 		public var shapeRecord:Vector.<SWFShapeRecord>;
 		public var shapeBounds:SWFRectangle = new SWFRectangle();
-		public var shapes:SWFShapeWithStyle;
 		
 		private var _characterId:uint=1;
 		public function get characterId():uint { return _characterId; }
@@ -75,7 +74,6 @@ package nid.xfl.dom.elements
 			/*
 			 * SWF Elements
 			 */
-			shapes = new SWFShapeWithStyle();
 			
 			_matrix = null;
 			_matrix = new Matrix();
@@ -95,7 +93,7 @@ package nid.xfl.dom.elements
 			fills = new Dictionary()
 			
 			for ( i = 0; i < data.fills.FillStyle.length(); i++)
-			{				
+			{
 				if (data.fills.FillStyle[i].toString().indexOf("SolidColor") != -1)
 				{
 					fills[int(data.fills.FillStyle[i].@index)] = new SolidColor(data.fills.FillStyle[i]);
@@ -108,7 +106,7 @@ package nid.xfl.dom.elements
 				else if (data.fills.FillStyle[i].toString().indexOf("RadialGradient") != -1)
 				{
 					fills[int(data.fills.FillStyle[i].@index)] = new RadialGradient(data.fills.FillStyle[i]);
-					TYPE = 4;
+					//TYPE = fills[int(data.fills.FillStyle[i].@index)].focalPointRatio != 0?4:TYPE;
 				}
 				else if (data.fills.FillStyle[i].toString().indexOf("BitmapFill") != -1)
 				{
@@ -117,7 +115,7 @@ package nid.xfl.dom.elements
 					isBitmapFill = true;
 				}
 			}
-			fills.length = i + 1;
+			fills.length = i;
 			/**
 			 * Parse Strokes
 			 */
@@ -195,14 +193,15 @@ package nid.xfl.dom.elements
 		 */
 		public function publish(tags:Vector.<ITag>,  property:Object):void
 		{
-			_characterId = property.characterId;
+			var shapes:SWFShapeWithStyle = new SWFShapeWithStyle();
 			
 			for each (var fillStyles:* in fills)
 			{
 				if (fillStyles is IFillStyle)
 				{
-					shapes.initialFillStyles.push(fillStyles.export(TYPE));
-					trace('initialFillStyles.type:' + shapes.initialFillStyles[shapes.initialFillStyles.length - 1].type.toString(16));
+					trace(fillStyles);
+					shapes.initialFillStyles.push(fillStyles.export(TYPE, tags, property));
+					//trace('initialFillStyles.type:' + shapes.initialFillStyles[shapes.initialFillStyles.length - 1].type.toString(16));
 				}
 			}
 			for each (var lineStyles:* in strokes)
@@ -214,7 +213,9 @@ package nid.xfl.dom.elements
 			
 			shapes.records = shapeRecord;
 			
-			trace('shape type:' + type);
+			//trace('shape type:' + type);
+			
+			_characterId = property.characterId;
 			
 			//TYPE = 1;
 			if (TYPE == 1)
@@ -249,6 +250,8 @@ package nid.xfl.dom.elements
 		 */
 		public function export(handler:IShapeExporter = null):void
 		{
+			var shapes:SWFShapeWithStyle = new SWFShapeWithStyle();
+			
 			for each (var fillStyles:* in fills)
 			{
 				if(fillStyles is IFillStyle)

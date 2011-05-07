@@ -4,6 +4,7 @@ package nid.xfl.core
 	import flash.geom.Matrix;
 	import flash.geom.Transform;
 	import flash.utils.Dictionary;
+	import nid.xfl.compiler.swf.data.SWFButtonRecord;
 	import nid.xfl.compiler.swf.tags.ITag;
 	import nid.xfl.dom.DOMFrame;
 	import nid.xfl.dom.DOMLayer;
@@ -47,8 +48,10 @@ package nid.xfl.core
 					{
 						if (i > data.domframes[f].index && data.domframes.length > f)
 						{
-							frame = frames[i - 1].clone(f == (data.domframes.length - 1));
+							//frame = frames[i - 1].clone(f == (data.domframes.length - 1));
+							frame = frames[i - 1].clone();
 							applyMotion(frame, data, i, f);
+							trace('clone');
 						}
 						else
 						{
@@ -214,10 +217,10 @@ package nid.xfl.core
 			
 			//trace('depthOffset:' + depthOffset);
 		}
-		public function publish(f:int, tags:Vector.<ITag>, property:Object,sub_tags:Vector.<ITag>=null):void
+		public function publish(f:int, tags:Vector.<ITag>, property:Object, sub_tags:Vector.<ITag> = null, isButton:Boolean = false, characters:Vector.<SWFButtonRecord> = null ):void
 		{
 			property.depthOffset = depthOffset;
-			frames[f].publish(tags, property, sub_tags);
+			frames[f].publish(tags, property, sub_tags, isButton, characters );
 		}
 	}
 
