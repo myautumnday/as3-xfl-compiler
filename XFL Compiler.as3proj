@@ -6,8 +6,8 @@
     <movie input="" />
     <movie path="bin\XFLCompiler.swf" />
     <movie fps="30" />
-    <movie width="800" />
-    <movie height="800" />
+    <movie width="500" />
+    <movie height="500" />
     <movie version="11" />
     <movie background="#333333" />
   </output>
@@ -50,7 +50,7 @@
   <!-- SWC Libraries -->
   <libraryPaths>
     <element path="lib\actionscript-global-classes.swc" />
-    <element path="lib\ZipFile.swc" />
+    <element path="lib\FLPort.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -76,7 +76,6 @@
   <hiddenPaths>
     <hidden path="src\nid\xfl\events" />
     <hidden path="src\nid\xfl\interfaces" />
-    <hidden path="src\nid\xfl\motion" />
     <hidden path="src\nid\xfl\settings" />
     <hidden path="src\nid\xfl\utils" />
   </hiddenPaths>
@@ -86,7 +85,7 @@
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
-    <option showHiddenPaths="False" />
+    <option showHiddenPaths="True" />
     <option testMovie="Default" />
   </options>
 </project>

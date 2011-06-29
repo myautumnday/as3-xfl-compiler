@@ -13,8 +13,9 @@ package nid.xfl.core
 	import nid.xfl.dom.*;
 	import nid.xfl.dom.elements.*;
 	import nid.xfl.interfaces.*;
-	import nid.xfl.utils.Clone;
+	import nid.xfl.utils.CloneUtils;
 	import nid.xfl.utils.Convertor;
+	import nid.xfl.utils.FilterUtils;
 	import nid.xfl.XFLCompiler;
 	/**
 	 * ...
@@ -27,6 +28,7 @@ package nid.xfl.core
 		public var elements:Vector.<FrameElement>;
 		public var rawElements:Vector.<IElement>;
 		public var matrix:Matrix;
+		public var _filters:Vector.<IFilter>;
 		public var hasColorTransform:Boolean;
 		public var colorTransform:ColorTransform;
 		public var stop:Boolean;
@@ -57,6 +59,8 @@ package nid.xfl.core
 			tweenType 		= data.tweenType;
 			index			= data.index;
 			
+			stop = actionscript != null?actionscript.stop:false;
+			
 			rawElements = data.elements;
 			elements = new Vector.<FrameElement>();
 			
@@ -66,13 +70,13 @@ package nid.xfl.core
 				addChild(element);
 				elements.push(element);
 				matrix = element.matrix;
+				_filters = element._filters;
 				
 				if (data.elements[e].color != null)
 				{
 					hasColorTransform = true;
 					colorTransform.alphaMultiplier = data.elements[e].color.alphaMultiplier;
 				}
-				
 				//trace(element.type);
 			}
 		}
@@ -88,7 +92,6 @@ package nid.xfl.core
 		}
 		public function updateDisplay():void
 		{
-			
 			for (var e:int = 0; e < elements.length; e++)
 			{
 				if (elements[e].type == "timeline")
@@ -96,9 +99,16 @@ package nid.xfl.core
 					if (tweenType == "")
 					{
 						matrix = elements[e].matrix;
+						_filters = elements[e]._filters;
 					}
 					
 					elements[e].display.transform.matrix = matrix;
+					
+					if (_filters != null)
+					{
+						elements[e].display.filters = FilterUtils.convert(_filters);
+					}
+					
 					
 					if (hasColorTransform)
 					{
@@ -139,8 +149,9 @@ package nid.xfl.core
 			var frame:Frame 			= new Frame();
 				frame.isEndFrame 		= end;
 				frame.matrix 			= matrix.clone();
+				frame._filters 			= CloneUtils.cloneFilters(_filters);
 				frame.hasColorTransform = hasColorTransform;
-				frame.colorTransform 	= Clone.colorTransform(colorTransform);
+				frame.colorTransform 	= CloneUtils.colorTransform(colorTransform);
 				frame.elements 			= elements;
 				frame.rawElements 		= rawElements;
 				frame.tweenType 		= tweenType;
@@ -231,8 +242,8 @@ package nid.xfl.core
 						 */
 						if (isClone)
 						{
-							trace('\t cloned object placed');
-							trace('\t 	property.characterId:' + property.characterId);
+							//trace('\t cloned object placed');
+							//trace('\t 	property.characterId:' + property.characterId);
 							
 							if (isButton)
 							{						
@@ -264,8 +275,8 @@ package nid.xfl.core
 								XFLCompiler.displayList[p_depth +'_' + depth].libraryItemName == rawElements[i].libraryItemName
 								)
 							{
-								trace('\t   exist in depth');
-								trace('\t 		property.characterId:' + property.characterId);
+								//trace('\t   exist in depth');
+								//trace('\t 		property.characterId:' + property.characterId);
 								
 								placeObject.hasMatrix 			= true;
 								placeObject.hasMove 			= true;
@@ -287,12 +298,17 @@ package nid.xfl.core
 								}
 								else
 								{
-									trace('\t   not exist in library');
+									//trace('\t   not exist in library');
 									/**
 									* Definition New tag
 									*/
 									rawElements[i].publish(tags, property);
-									
+									if (rawElements[i] is DOMSymbolInstance && DOMSymbolInstance(rawElements[i]).instanceName != "")
+									{
+										placeObject.hasName = true;
+										placeObject.instanceName = DOMSymbolInstance(rawElements[i]).instanceName;
+										trace('instanceName:'+placeObject.instanceName);
+									}
 									if (isButton)
 									{
 										trace(rawElements[i]);
@@ -309,7 +325,7 @@ package nid.xfl.core
 								
 								if (XFLCompiler.displayList[p_depth +'_' + depth] != undefined)
 								{
-									trace('\t remove tag depth:' + depth);
+									//trace('\t remove tag depth:' + depth);
 									/**
 									 * Remove Tag
 									 */
@@ -327,7 +343,7 @@ package nid.xfl.core
 								
 								characterId = property.characterId;
 								
-								trace('\t place object depth:' + depth, "Char ID:" + characterId);
+								//trace('\t place object depth:' + depth, "Char ID:" + characterId);
 								
 								/**
 								 * Place tag

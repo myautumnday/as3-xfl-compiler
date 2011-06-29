@@ -47,14 +47,25 @@ package
 			//xfleditor.load("template test/advanced_text/advanced_text.xfl");
 			//xfleditor.load("template test/lossless image/lossless image.xfl");
 			//xfleditor.load("template test/swf_build_test0/swf_build_test0.xfl");
-			xfleditor.load("250x250/250x250.xfl");
-			//xfleditor.load("250x250.zip");
+			//xfleditor.load("250x250/250x250.xfl");
+			//xfleditor.load("120x600/120x600.xfl");
+			//xfleditor.load("160x600/160x600.xfl");
+			//xfleditor.load("bitmaps/bitmaps.xfl");
+			//xfleditor.load("tween/tween.xfl");
+			//xfleditor.load("replay/replay.xfl");
+			//xfleditor.load("250x250/250x250.zip");
 			//xfleditor.load("336x280/336x280.xfl");
 			//xfleditor.load("template test/250x250-f1/250x250-f1.xfl");
 			//xfleditor.load("template test/simple text/simple text.xfl");
 			//xfleditor.load("http://dev3.ispg.in/nidin/ad4adwords/xfl-compiler/250x250/250x250.zip");
 			//xfleditor.load("template test/sample1/sample1.xfl");
 			//xfleditor.load("template test/animation_1/animation_1.xfl");
+			
+			
+			/**
+			 * Filter test
+			 */
+			xfleditor.load("filtertest/blur/blur.xfl");
 			
 			/**
 			 * Unit Test
@@ -68,6 +79,13 @@ package
 			//xfleditor.load("UnitTest/gradients/gradients.xfl");
 			//xfleditor.load("UnitTest/bitmap_fill/bitmap_fill.xfl");
 			//xfleditor.load("UnitTest/bitmaps/bitmaps.xfl");
+			//xfleditor.load("UnitTest/lossless_bitmaps/lossless_bitmaps.xfl");
+			
+			/**
+			 *  New template test
+			 */
+			//xfleditor.load("NewTemplates/250x250-1/250x250-1.xfl");
+			//xfleditor.load("NewTemplates/250x250-2/250x250-2.xfl");
 			
 			var build:Button = new Button("Build SWF",100);
 			build.x  = stage.stageWidth - build.width;

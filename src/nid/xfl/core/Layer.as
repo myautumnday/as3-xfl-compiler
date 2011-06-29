@@ -2,14 +2,19 @@ package nid.xfl.core
 {
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
+	import flash.geom.Point;
 	import flash.geom.Transform;
 	import flash.utils.Dictionary;
+	import nid.geom.DMatrix;
+	import nid.utils.MatrixConvertor;
 	import nid.xfl.compiler.swf.data.SWFButtonRecord;
 	import nid.xfl.compiler.swf.tags.ITag;
 	import nid.xfl.dom.DOMFrame;
 	import nid.xfl.dom.DOMLayer;
+	import nid.xfl.dom.elements.DOMSymbolInstance;
+	import nid.xfl.interfaces.IFilter;
 	import nid.xfl.motion.EasingEquations;
-	import nid.xfl.motion.TweenType;
+	import nid.xfl.motion.TweenTypes;
 	/**
 	 * ...
 	 * @author Nidin P Vinayakan
@@ -50,8 +55,7 @@ package nid.xfl.core
 						{
 							//frame = frames[i - 1].clone(f == (data.domframes.length - 1));
 							frame = frames[i - 1].clone();
-							applyMotion(frame, data, i, f);
-							trace('clone');
+							applyProperties(frame, data, i, f);
 						}
 						else
 						{
@@ -75,57 +79,110 @@ package nid.xfl.core
 				}
 			}
 		}
-		internal function applyMotion(frame:Frame, data:DOMLayer, i:int, f:int):void
+		internal function applyProperties(frame:Frame, data:DOMLayer, i:int, f:int):void
 		{
+			
+			/**
+			 * Apply Tween
+			 */
 			switch(data.domframes[f].tweenType)
 			{
-				case TweenType.SHAPE:
+				case TweenTypes.SHAPE:
 				{
-					
+					//TODO: MorphCurves
 				}
 				break;
 				
-				case TweenType.MOTION:
+				case TweenTypes.MOTION:
 				{
-					var mat:Matrix = frame.elements[0].display.transform.matrix;
-					//trace(mat.toString());
-					//Linear
-					//trace((i + 1 - data.domframes[f].index));
-					mat.tx += ((data.domframes[f + 1].tweenMatrix.tx - data.domframes[f].tweenMatrix.tx) / (data.domframes[f].duration + 1) ) * (i + 1 - data.domframes[f].index);
-					mat.ty += ((data.domframes[f + 1].tweenMatrix.ty - data.domframes[f].tweenMatrix.ty) / (data.domframes[f].duration + 1)) * (i + 1 - data.domframes[f].index);
-					mat.a += ((data.domframes[f + 1].tweenMatrix.a - data.domframes[f].tweenMatrix.a) / (data.domframes[f].duration + 1)) * (i + 1 - data.domframes[f].index);
-					mat.b += ((data.domframes[f + 1].tweenMatrix.b - data.domframes[f].tweenMatrix.b) / (data.domframes[f].duration + 1)) * (i + 1 - data.domframes[f].index);
-					mat.c += ((data.domframes[f + 1].tweenMatrix.c - data.domframes[f].tweenMatrix.c) / (data.domframes[f].duration + 1)) * (i + 1 - data.domframes[f].index);
-					mat.d += ((data.domframes[f + 1].tweenMatrix.d - data.domframes[f].tweenMatrix.d) / (data.domframes[f].duration + 1)) * (i + 1 - data.domframes[f].index);
+					/**
+					 * Classic Motion Tween
+					 */
+					var mat:Matrix  = frame.elements[0].display.transform.matrix;
 					
-					//Ease Out
-					//trace(i, data.domframes[f].tweenMatrix.tx, mat.tx, EasingEquations.easeOutQuad(i, data.domframes[f].tweenMatrix.tx, mat.tx, data.domframes[f].duration));
-					//mat.tx = EasingEquations.easeOutQuad(i, data.domframes[f].tweenMatrix.tx, mat.tx, data.domframes[f].duration);
-					//mat.ty += EasingEquations.ease(data.domframes[f + 1].tweenMatrix.ty, frames[i - 1].matrix.ty);
-					//mat.a += ((data.domframes[f + 1].tweenMatrix.a - data.domframes[f].tweenMatrix.a) / data.domframes[f].duration ) * (i + 1 - data.domframes[f].index);
-					//mat.b += ((data.domframes[f + 1].tweenMatrix.b - data.domframes[f].tweenMatrix.b) / data.domframes[f].duration ) * (i + 1 - data.domframes[f].index);
-					//mat.c += ((data.domframes[f + 1].tweenMatrix.c - data.domframes[f].tweenMatrix.c) / data.domframes[f].duration ) * (i + 1 - data.domframes[f].index);
-					//mat.d += ((data.domframes[f + 1].tweenMatrix.d - data.domframes[f].tweenMatrix.d) / data.domframes[f].duration ) * (i + 1 - data.domframes[f].index);
+					if (frame.elements[0].isTimeline)
+					{
+						var bcpx:Number = frame.elements[0].timeline.centerPoint3DX;
+						var bcpy:Number = frame.elements[0].timeline.centerPoint3DY;
+						var bcpz:Number = frame.elements[0].timeline.centerPoint3DZ;
+					}
+					
+					if (data.domframes.length > f)
+					{
+						if (data.domframes[f + 1].elements[0] is DOMSymbolInstance)
+						{
+							var symbol:DOMSymbolInstance = DOMSymbolInstance(data.domframes[f + 1].elements[0]);
+							var ccpx:Number = symbol.centerPoint3DX - bcpx;
+							var ccpy:Number = symbol.centerPoint3DY - bcpy;
+							var ccpz:Number = symbol.centerPoint3DZ - bcpz;
+							
+							var iftrs:Vector.<IFilter> = symbol._filters;
+						}
+						
+						if (data.domframes[f].elements[0] is DOMSymbolInstance)
+						{
+							var bftrs:Vector.<IFilter> = DOMSymbolInstance(data.domframes[f].elements[0])._filters;
+						}
+						
+						var bmat:DMatrix  = MatrixConvertor.convert(data.domframes[f].tweenMatrix);
+						var imat:DMatrix  = MatrixConvertor.convert(data.domframes[f + 1].tweenMatrix);
+						var cmat:DMatrix  = new DMatrix();
+						
+						var t:Number	= i + 1 - data.domframes[f].index;
+						var d:Number	= data.domframes[f].duration + 1;
+						var acc:Number	= data.domframes[f].acceleration;
+						var tp:Point	= data.domframes[f].transformationPoint;
+						
+						cmat.tx	= imat.tx - bmat.tx;
+						cmat.ty	= imat.ty - bmat.ty;
+						
+						cmat.scaleX = imat.scaleX - bmat.scaleX;
+						cmat.scaleY = imat.scaleY - bmat.scaleY;
+						cmat.rotation  = imat.rotation - bmat.rotation;
+						
+						var bcpt:Point = new Point(bcpx, bcpy);
+						var ccpt:Point = new Point(ccpx, ccpy);
+						
+						EasingEquations.easeMatrix(mat, bmat, cmat, tp, bcpt, ccpt, t, d, acc);
+						
+						//mat.tx = EasingEquations.ease(t, bx, cx, d, acc);
+						//mat.ty = EasingEquations.ease(t, by, cy, d, acc);
+						
+						var alpha_b:Number = data.domframes[f].color.alphaMultiplier;
+						var alpha_c:Number = data.domframes[f + 1].color.alphaMultiplier - data.domframes[f].color.alphaMultiplier;
+						
+						/**
+						 * Apply Color Transform
+						 */
+						if (frame.hasColorTransform)
+						{
+							if (data.domframes[f + 1].color.alphaMultiplier == data.domframes[f].color.alphaMultiplier)
+							{
+								frame.colorTransform.alphaMultiplier = data.domframes[f].color.alphaMultiplier;
+							}
+							else 
+							{
+								frame.colorTransform.alphaMultiplier = EasingEquations.ease(t, alpha_b, alpha_c, d, acc);
+							}
+						}
+						
+						/**
+						 * Apply Filters
+						 */
+						
+						if (iftrs != null)
+						{
+							frame._filters = EasingEquations.easeFilters(t, iftrs, bftrs, d, acc);
+						}
+						
+					}
 					
 					frame.matrix = mat;
 					
-					if (frame.hasColorTransform)
-					{
-						if (data.domframes[f + 1].color.alphaMultiplier == data.domframes[f].color.alphaMultiplier)
-						{
-							frame.colorTransform.alphaMultiplier = data.domframes[f].color.alphaMultiplier;
-						}
-						else 
-						{
-							frame.colorTransform.alphaMultiplier = ((data.domframes[f + 1].color.alphaMultiplier - data.domframes[f].color.alphaMultiplier) / data.domframes[f].duration ) * (i + 1 - data.domframes[f].index);
-						}
-						//trace('frame.colorTransform.alphaMultiplier:' + frame.colorTransform.alphaMultiplier);
-					}
-					
 				}
 				break;
 				
-				case TweenType.MOTION_OBJECT:
+				case TweenTypes.MOTION_OBJECT:
 				{
 					
 				}
