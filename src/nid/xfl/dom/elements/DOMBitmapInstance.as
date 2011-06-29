@@ -171,15 +171,18 @@ package nid.xfl.dom.elements
 		}
 		public function createDisplay():DisplayObject
 		{
+			var bmp:Bitmap = doc.media.getBitmapByName(libraryItemName);
 			
-			if (doc.media.getBitmapByName(libraryItemName) == null)
+			if (bmp == null)
 			{
+				trace('Image:'+libraryItemName+' - not found in zip file');
 				return new Sprite();
 			}
 			else
 			{
-				var bmp_data:BitmapData = doc.media.getBitmapByName(libraryItemName).bitmapData.clone();
+				var bmp_data:BitmapData = bmp.bitmapData.clone();
 				var bitmap:Bitmap = new Bitmap(bmp_data);
+				bitmap.smoothing = true;
 				bitmap.transform.matrix = _matrix;
 				bitmap.name = name;
 				return bitmap;
